@@ -6,7 +6,9 @@
 	Author: Scott Landes
 	Version: 0.1
 	Author URI: http://www.scottlandes.com
+	License: GPL2
  */
+
 
 add_action( 'admin_menu', 'gidm_plugin_menu' );
 
@@ -15,9 +17,32 @@ function gidm_plugin_menu() {
 }
 
 function gidm_management_page() { 
+	global $wpdb;
 
-	$domain = get_option('siteurl'); //or home
-	$domain = str_replace('http://', '', $domain);
+	/*	1. Check to see if domain mapping is enabled, if so
+		2. Get current blog id
+		3. Query domain mapping table w/ blog ID and retrieve primary domain
+		4. Convert to display format
+		else
+		2. Get domain using built in wp functions
+	*/
+
+    $table_name = $wpdb->base_prefix.'domain_mapping';
+
+	if ( $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name) {
+		$blog_id = get_current_blog_id();
+		$blog_urls = $wpdb->get_results(
+			"
+			SELECT domain
+			FROM $table_name
+			WHERE blog_id = $blog_id AND active = 1
+			"
+		);
+		$domain = $blog_urls[0]->domain;
+	} else {
+		$domain = get_option('siteurl'); //or home
+		$domain = str_replace('http://', '', $domain);
+	}
 
 	if ( isset($_POST['form_submit']) ) {
 		update_option ( 'google_plus_id', $_POST['google_plus_id'] );
