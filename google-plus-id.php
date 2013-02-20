@@ -79,7 +79,7 @@ if ( get_option( 'google_plus_id' )) {
 	add_action( 'wp_head', 'gidm_head' );
 
 	function gidm_head() {
-		echo '<a rel="author" href="https://plus.google.com/'.get_option( 'google_plus_id' ).'/posts"/>';
+		echo '<link rel="author" href="https://plus.google.com/'.get_option( 'google_plus_id' ).'">';
 	}
 
 }
